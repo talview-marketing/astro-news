@@ -1,11 +1,10 @@
 ---
 import AuthorCard from "@/components/cards/authorCard.astro";
 import HeaderSection from "./headerSection.astro";
-import { authorsHandler } from "@/lib/handlers/authors";
+import { getAllAuthors } from "@/lib/fetchAuthors.ts"; // from Sanity
 
-const authors = authorsHandler.limitAurhors(6);
+const authors = await getAllAuthors();
 ---
-
 <section class="container py-12" data-pagefind-ignore="all">
   <HeaderSection title="Authors" link_title="View all" link_url="/authors" />
   <ul
@@ -15,3 +14,4 @@ const authors = authorsHandler.limitAurhors(6);
     {authors.map((author) => <AuthorCard author={author} />)}
   </ul>
 </section>
+

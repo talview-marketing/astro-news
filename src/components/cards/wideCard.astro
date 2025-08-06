@@ -1,15 +1,16 @@
 ---
 import { Image } from "astro:assets";
-import type { CollectionEntry } from "astro:content";
 import { getDateDistance, normalizeDate } from "@/lib/utils/date";
 import Divider from "../bases/divider.astro";
 
 type Props = {
-  article: CollectionEntry<"articles">;
+  article: any; 
   isLast: boolean;
 };
 
 const { article, isLast } = Astro.props;
+console.log(article);
+const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
 ---
 
 <li
@@ -18,7 +19,7 @@ const { article, isLast } = Astro.props;
   <div
     class="flex-shrink-0 aspect-square w-32 text-sm text-base-content/60 text-pretty capitalize hidden lg:flex pt-1"
   >
-    {getDateDistance(normalizeDate(article.data.publishedTime))}
+    {getDateDistance(normalizeDate(publishedTime))}
   </div>
   <div
     class:list={[
@@ -27,40 +28,43 @@ const { article, isLast } = Astro.props;
     ]}
   >
     <div class="w-full lg:w-60 aspect-video">
-      <Image
-        src={article.data.cover}
-        alt={article.data.covert_alt
-          ? article.data.covert_alt
-          : article.data.title}
-        layout="responsive"
-        loading={"eager"}
-        class="aspect-video rounded w-full h-full"
-      />
+      {article.image ? (
+        <img
+          src={article.image?.url}
+          alt={article.title}
+          loading="eager"
+          class="aspect-video rounded w-full h-full object-cover"
+        />
+      ) : (
+        <div class="aspect-video rounded w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+          No image
+        </div>
+      )}
     </div>
     <div class="flex-1 space-y-2">
       <h3 class="text-xl font-semibold lg:group-hover:underline">
-        <a href={`/articles/${article.id}`}>
+        <a href={`/articles/${article.slug?.current ?? "missing-slug"}`}>
           <span class="absolute inset-0 z-10"></span>
-          {article.data.title}
+          {article.title}
         </a>
       </h3>
       <p class="text-base-content/80 max-w-xl text-pretty">
-        {article.data.description}
+        {article.description}
       </p>
     </div>
     <div class="text-sm lg:hidden flex item-center text-base-content/70 pt-2">
       <time
         class="flex items-center gap-1"
-        datetime={normalizeDate(article.data.publishedTime)}
+        datetime={normalizeDate(publishedTime)}
       >
         <span>
-          {getDateDistance(normalizeDate(article.data.publishedTime))}
+          {getDateDistance(normalizeDate(publishedTime))}
         </span>
       </time>
       <Divider />
       <small class="flex items-center gap-1">
         <span class="capitalize text-sm">
-          {article.data.category.id}
+          {/* You can add category info here if needed */}
         </span>
       </small>
     </div>

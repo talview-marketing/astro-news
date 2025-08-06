@@ -1,17 +1,14 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import BaseLayout from "./base.astro";
 import ViewListHeader from "@/components/shared/view-list-header.astro";
-
-type Props = {
+interface Props {
   header: string;
-  entry: CollectionEntry<"views">;
-};
+}
 
-const { entry, header } = Astro.props;
+const { header } = Astro.props as Props;
 ---
 
-<BaseLayout entry={entry}>
+<BaseLayout >
   <div
     class="container flex flex-col h-full pb-8 pt-4"
     data-pagefind-ignore="all"

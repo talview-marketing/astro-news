@@ -1,0 +1,11 @@
+---
+import { PortableText } from '@portabletext/react'
+
+interface Props {
+  content: any;
+}
+
+const { content } = Astro.props;
+---
+
+<PortableText value={content} />

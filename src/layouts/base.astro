@@ -13,6 +13,7 @@ type Props = {
 const { entry } = Astro.props;
 
 const meta = await getMeta(entry);
+
 ---
 
 <!doctype html>
@@ -23,6 +24,6 @@ const meta = await getMeta(entry);
     <main class="flex-1">
       <slot />
     </main>
-    <Footer />
+  
   </body>
 </html>

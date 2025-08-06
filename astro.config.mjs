@@ -26,9 +26,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [readingTime, modifiedTime],
   },
-  experimental: {
-    responsiveImages: true,
-  },
+
   image: {},
   integrations,
   vite: {

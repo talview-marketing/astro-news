@@ -1,6 +1,9 @@
 ---
 import Menu from "@/assets/svgs/menu.astro";
 import { NAVIGATION_LINKS, OTHER_LINKS } from "@/lib/config";
+import { getNavigationLinks } from "@/lib/config";
+
+const links = await getNavigationLinks();
 ---
 
 <div class="dropdown">
@@ -25,7 +28,7 @@ import { NAVIGATION_LINKS, OTHER_LINKS } from "@/lib/config";
         <summary>Categories</summary>
         <ul>
           {
-            NAVIGATION_LINKS.map(({ href, text, target }) => (
+            links.map(({ href, text, target }) => (
               <li>
                 <a href={href} target={target ?? "_self"} aria-label={text}>
                   {text}

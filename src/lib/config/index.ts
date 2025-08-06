@@ -1,7 +1,8 @@
 import type { Link } from "../types";
+import {getAllCategories} from '../../lib/fetchCategories';
 
 export const SITE = {
-  title: "Astro News",
+  title: "Talent Integrity",
   description: "A news website built with Astro",
   author: "Mohammad Rahmani",
   url: "https://astro-news-six.vercel.app",
@@ -13,32 +14,43 @@ export const SITE = {
   postsPerPage: 4,
 };
 
-export const NAVIGATION_LINKS: Link[] = [
-  {
-    href: "/categories/technology",
-    text: "Technology",
-  },
-  {
-    href: "/categories/programming",
-    text: "Programming",
-  },
-  {
-    href: "/categories/lifestyle",
-    text: "Lifestyle",
-  },
-  {
-    href: "/categories/productivity",
-    text: "Productivity",
-  },
-  {
-    href: "/categories/health",
-    text: "Health",
-  },
-  {
-    href: "/categories/finance",
-    text: "Finance",
-  },
-];
+
+// export const NAVIGATION_LINKS: Link[] = [
+//   {
+//     href: "/categories/technology",
+//     text: "Technology",
+//   },
+//   {
+//     href: "/categories/programming",
+//     text: "Programming",
+//   },
+//   {
+//     href: "/categories/lifestyle",
+//     text: "Lifestyle",
+//   },
+//   {
+//     href: "/categories/productivity",
+//     text: "Productivity",
+//   },
+//   {
+//     href: "/categories/health",
+//     text: "Health",
+//   },
+//   {
+//     href: "/categories/finance",
+//     text: "Finance",
+//   },
+// ];
+ 
+export async function getNavigationLinks(): Promise<Link[]> {
+  const categories = await getAllCategories();
+
+  return categories.map((category :any) => ({
+    href: `/categories/${category.slug.current}`,
+    text: category.title,
+  }));
+}
+
 
 export const OTHER_LINKS: Link[] = [
   {

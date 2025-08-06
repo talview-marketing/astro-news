@@ -1,13 +1,34 @@
 ---
-import { categoriesHandler } from "@/lib/handlers/categories";
+import { getAllCategories, getCategoryBySlug } from "@/lib/fetchCategories";
+import NewsCard from "@/components/cards/newsCard.astro";
+import ListLayout from "@/layouts/list.astro";
 
-export function getStaticPaths() {
-  const categories = categoriesHandler.allCategories();
-  return categories.map((category) => ({ params: { category: category.id } }));
+export async function getStaticPaths() {
+  const categories = await getAllCategories();
+  return categories.map((category) => ({
+    params: { category: category.slug.current }
+  }));
 }
 
 const { category } = Astro.params;
+const categoryData = await getCategoryBySlug(category);
+
+if (!categoryData) {
+  return Astro.redirect("/404");
+}
+
+const entry = {
+  title: categoryData.title,
+  description: categoryData.description ?? "",
+};
 ---
 
-<!-- TODO: show last articles and fix pagination -->
-<meta http-equiv="refresh" content={`0; url=${`/categories/${category}/1`}`} />
+<ListLayout header={categoryData.title} entry={entry}>
+  <ul class="w-full space-y-8 my-6">
+    {(categoryData.articles ?? []).map((article, index) => (
+      <li>
+        <NewsCard article={article} index={index} />
+      </li>
+    ))}
+  </ul>
+</ListLayout>

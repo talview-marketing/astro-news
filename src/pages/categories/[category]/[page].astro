@@ -1,66 +1,72 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { SITE } from "@/lib/config";
-import { articlesHandler } from "@/lib/handlers/articles";
-import { categoriesHandler } from "@/lib/handlers/categories";
+import { getAllCategories, getCategoryBySlug } from "@/lib/fetchCategories";
 import ListLayout from "@/layouts/list.astro";
-
 import Pagination from "@/components/shared/pagination.astro";
 import WideCard from "@/components/cards/wideCard.astro";
-import { getEntry } from "astro:content";
+import { SITE } from "@/lib/config";
 
-export const getStaticPaths = (async ({ paginate }) => {
-  const allCategories = categoriesHandler.allCategories();
-  const allArticles = articlesHandler.allArticles();
+export async function getStaticPaths() {
+  const categories = await getAllCategories();
+  const pageSize = SITE.postsPerPage;
+  const paths = [];
 
-  return allCategories.flatMap((category) => {
-    const filteredArticles = allArticles.filter(
-      (article) => article.data.category.id === category.id
-    );
-    return paginate(filteredArticles, {
-      params: { category: category.id },
-      props: { postsLength: filteredArticles.length },
-      pageSize: SITE.postsPerPage,
-    });
-  });
-}) satisfies GetStaticPaths;
+  for (const category of categories) {
+    const numArticles = category.articles?.length ?? 0;
+    const numPages = Math.max(1, Math.ceil(numArticles / pageSize));
+    
+    for (let page = 1; page <= numPages; page++) {
+      paths.push({
+        params: {
+          category: category.slug.current,
+          page: page.toString(),
+        },
+        props: {
+          categorySlug: category.slug.current,
+          pageNumber: page,
+          totalArticles: numArticles,
+        },
+      });
+    }
+  }
 
-const { page } = Astro.props;
-const { postsLength } = Astro.props;
-const params = Astro.params;
-const articles = page.data;
-const pathname = new URL(Astro.request.url).pathname.split("/");
-const basePath = `${pathname[1]}/${pathname[2]}`;
+  return paths;
+}
 
-const entry = await getEntry("views", "categories");
+const { categorySlug, pageNumber, totalArticles } = Astro.props;
+const categoryData = await getCategoryBySlug(categorySlug);
 
-if (!entry) {
+if (!categoryData) {
   return Astro.redirect("/404");
 }
+
+// Pagination logic
+const pageSize = SITE.postsPerPage;
+const startIndex = (pageNumber - 1) * pageSize;
+const endIndex = startIndex + pageSize;
+const articles = categoryData.articles?.slice(startIndex, endIndex) ?? [];
+const totalPages = Math.ceil(totalArticles / pageSize);
+
+const entry = {
+  title: categoryData.title,
+  description: categoryData.description ?? "",
+};
 ---
 
-<ListLayout header={params.category} entry={entry}>
+<ListLayout header={categoryData.title} entry={entry}>
   <ul class="flex flex-col gap-2 flex-1">
-    {
-      articles.map((article) => (
-        <WideCard
-          article={article}
-          isLast={articles.lastIndexOf(article) === articles.length - 1}
-        />
-      ))
-    }
-  </ul>
-  {
-    postsLength > SITE.postsPerPage ? (
-      <Pagination
-        length={page.lastPage}
-        currentUrl={page.url.current}
-        currentPage={page.currentPage}
-        baseUrl={`/${basePath}`}
-        prevUrl={page.url.prev}
-        nextUrl={page.url.next}
-        lastUrl={`/${basePath}/${page.lastPage}`}
+    {articles.map((article, index) => (
+      <WideCard
+        article={article}
+        isLast={index === articles.length - 1}
       />
-    ) : null
-  }
+    ))}
+  </ul>
+  {totalPages > 1 && (
+    <Pagination
+      length={totalPages}
+      currentPage={pageNumber}
+      baseUrl={`/categories/${categorySlug}`}
+      // Add other pagination props as needed
+    />
+  )}
 </ListLayout>

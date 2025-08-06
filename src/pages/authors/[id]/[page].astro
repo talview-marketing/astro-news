@@ -1,74 +1,76 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { SITE } from "@/lib/config";
-import { articlesHandler } from "@/lib/handlers/articles";
-import { authorsHandler } from "@/lib/handlers/authors";
+import { getAllAuthors, getAuthorBySlug } from "@/lib/fetchAuthors";
 import ListLayout from "@/layouts/list.astro";
 import WideCard from "@/components/cards/wideCard.astro";
 import Pagination from "@/components/shared/pagination.astro";
-import { getEntry } from "astro:content";
+import { SITE } from "@/lib/config";
 
-export const getStaticPaths = (({ paginate }) => {
-  const allAuthors = authorsHandler.allAuthors();
-  const allArticles = articlesHandler.allArticles();
+export async function getStaticPaths() {
+  const authors = await getAllAuthors();
+  const pageSize = SITE.postsPerPage;
+  const paths = [];
 
-  return allAuthors.flatMap((author) => {
-    const filteredArticles = allArticles.filter((article) =>
-      article.data.authors.map((a) => a.id).includes(author.id),
-    );
-    return paginate(filteredArticles, {
-      params: { id: author.id },
-      pageSize: SITE.postsPerPage,
-    });
-  });
-}) satisfies GetStaticPaths;
+  for (const author of authors) {
+    const authorData = await getAuthorBySlug(author.slug?.current || author._id);
+    const numArticles = authorData.articles?.length ?? 0;
+    const numPages = Math.max(1, Math.ceil(numArticles / pageSize));
+    
+    for (let page = 1; page <= numPages; page++) {
+      paths.push({
+        params: {
+          id: author.slug?.current || author._id,
+          page: page.toString(),
+        },
+        props: {
+          authorSlug: author.slug?.current || author._id,
+          pageNumber: page,
+          totalArticles: numArticles,
+        },
+      });
+    }
+  }
 
-const { page } = Astro.props;
-const params = Astro.params;
-const articles = page.data;
-const pathname = new URL(Astro.request.url).pathname.split("/");
-const basePath = `${pathname[1]}/${pathname[2]}`;
+  return paths;
+}
 
-const entry = await getEntry("views", "author");
-const author = authorsHandler.findAuthor(params.id);
+const { authorSlug, pageNumber, totalArticles } = Astro.props;
+const authorData = await getAuthorBySlug(authorSlug);
 
-if (!entry) {
+if (!authorData) {
   return Astro.redirect("/404");
 }
 
-const [HEADER] = entry.data.blocks;
+// Pagination logic
+const pageSize = SITE.postsPerPage;
+const startIndex = (pageNumber - 1) * pageSize;
+const endIndex = startIndex + pageSize;
+const articles = authorData.articles?.slice(startIndex, endIndex) ?? [];
+const totalPages = Math.ceil(totalArticles / pageSize);
+
+const entry = {
+  title: `${authorData.name}'s Articles`,
+  description: `Articles written by ${authorData.name}`,
+};
 ---
 
-<ListLayout
-  header={`${author.data.name}'s ${HEADER.title}`}
-  entry={{
-    ...entry,
-    data: {
-      ...entry.data,
-      title: `${author.data.name}'s ${entry.data.title}`,
-    },
-  }}
->
+<ListLayout header={`${authorData.name}'s Articles`} entry={entry}>
   <section class="flex-1">
     <ul class="flex flex-col gap-4">
-      {
-        articles.map((article) => (
-          <WideCard
-            article={article}
-            isLast={articles.lastIndexOf(article) === articles.length - 1}
-          />
-        ))
-      }
+      {articles.map((article, index) => (
+        <WideCard
+          article={article}
+          isLast={index === articles.length - 1}
+        />
+      ))}
     </ul>
   </section>
 
-  <Pagination
-    length={page.lastPage}
-    currentUrl={page.url.current}
-    currentPage={page.currentPage}
-    baseUrl={`/${basePath}`}
-    prevUrl={page.url.prev}
-    nextUrl={page.url.next}
-    lastUrl={`/${basePath}/${page.lastPage}`}
-  />
+  {totalPages > 1 && (
+    <Pagination
+      length={totalPages}
+      currentPage={pageNumber}
+      baseUrl={`/authors/${authorSlug}`}
+      // Add other pagination props as needed
+    />
+  )}
 </ListLayout>

@@ -1,24 +1,25 @@
 ---
 import { Image, Picture } from "astro:assets";
-import type { CollectionEntry } from "astro:content";
 import { formatDate, normalizeDate } from "@/lib/utils/date";
 import ResourcesAdd from "@/assets/svgs/resources-add.astro";
 import Time04 from "@/assets/svgs/time-04.astro";
 import Calendar04 from "@/assets/svgs/calendar-04.astro";
 import Divider from "@/components/bases/divider.astro";
-import { categoriesHandler } from "@/lib/handlers/categories";
-import { authorsHandler } from "@/lib/handlers/authors";
 import Share from "@/components/elements/share.astro";
 
 type Props = {
-  article: CollectionEntry<"articles">;
+  article: any; // Sanity article structure
   readingTime: string;
 };
 
 const { article, readingTime } = Astro.props;
 
-const category = categoriesHandler.oneCategory(article.data.category.id);
-const authors = authorsHandler.getAuthors(article.data.authors);
+// Handle the case where author might not exist
+const authors = article.authorData ? [article.authorData] : [];
+const categories = article.categories ?? [];
+
+// Handle null/undefined publishedAt with a fallback
+const publishedAt = article.publishedAt || new Date().toISOString();
 ---
 
 <section
@@ -27,48 +28,58 @@ const authors = authorsHandler.getAuthors(article.data.authors);
   <div
     class="container px-0 max-w-5xl lg:mt-4 overflow-hidden aspect-[20/9] rounded-md"
   >
-    <Picture
-      src={article.data.cover}
-      alt="article"
-      layout="full-width"
-      loading={"eager"}
-      formats={["avif", "webp"]}
-      class="w-full h-full object-center"
-    />
+    {article.image?.url ? (
+      <img
+        src={article.image.url}
+        alt={article.image.alt || article.title}
+        loading="eager"
+        class="w-full h-full object-cover"
+      />
+    ) : (
+      <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+        No image available
+      </div>
+    )}
   </div>
-  <div class="container my-4 max-w-5xl lg:hidden flex items-center gap-2">
-    <ResourcesAdd size="16" />
-    <a href={`/categories/${category.data.path}`} class="a-01 font-semibold"
-      >{category.data.title}</a
-    >
-  </div>
+  
   <div class="container max-w-5xl">
     <h1 class="text-3xl lg:text-4xl font-bold text-left text-pretty">
-      {article.data.title}
+      {article.title}
     </h1>
     <div class="flex flex-col gap-4 items-start mt-2 lg:mt-6 text-sm">
       <div class="text-base-content/70 flex items-center gap-2">
-        <span class="hidden lg:flex items-center gap-1">
-          <ResourcesAdd size="15" />
-          <a href={`/categories/${category.id}`} class="a-01 font-semibold"
-            >{category.data.title}</a
-          >
-        </span>
-        <Divider responsive />
+        <!-- Categories -->
+        {categories.length > 0 && (
+          <>
+            <span class="flex items-center gap-1">
+              <ResourcesAdd size="15" />
+              {categories.map((cat, index) => (
+                <a 
+                  href={`/categories/${cat.slug}`} 
+                  class="a-01 font-semibold hover:underline"
+                >
+                  {cat.title}{index < categories.length - 1 ? ', ' : ''}
+                </a>
+              ))}
+            </span>
+            <Divider />
+          </>
+        )}
+        
         <span class="flex items-center gap-1">
           <Calendar04 size="15" />
           <time
             class="hidden lg:block"
-            datetime={normalizeDate(article.data.publishedTime)}
+            datetime={normalizeDate(publishedAt)}
             >{
-              formatDate(normalizeDate(article.data.publishedTime), "long")
+              formatDate(normalizeDate(publishedAt), "long")
             }</time
           >
           <time
             class="block lg:hidden"
-            datetime={normalizeDate(article.data.publishedTime)}
+            datetime={normalizeDate(publishedAt)}
             >{
-              formatDate(normalizeDate(article.data.publishedTime), "short")
+              formatDate(normalizeDate(publishedAt), "short")
             }</time
           >
         </span>
@@ -78,36 +89,41 @@ const authors = authorsHandler.getAuthors(article.data.authors);
           <span>{readingTime}</span>
         </span>
       </div>
-      <!-- TODO: fix name, href, avatar of author -->
+      
       <div class="w-full flex flex-wrap gap-2 items-center justify-between">
         <div class="flex flex-wrap gap-4">
           {
             authors.map((author) => (
               <div class="flex items-center gap-2">
                 <a
-                  href={`/authors/${author.id}`}
+                  href={`/authors/${author.slug?.current || author._id}`}
                   class="flex items-center gap-2"
                 >
                   <div class="avatar">
                     <div class="w-8 rounded-full">
-                      <Image
-                        src={author.data.avatar}
-                        alt="author"
-                        width={48}
-                        height={48}
-                        loading={"eager"}
-                        format="webp"
-                        quality={80}
-                      />
+                      {author.image?.url ? (
+                        <img
+                          src={author.image.url}
+                          alt={author.name}
+                          width={48}
+                          height={48}
+                          loading="eager"
+                          class="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs">
+                          {author.name?.charAt(0) || 'A'}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <span class="font-bold capitalize">{author.data.name}</span>
+                  <span class="font-bold capitalize">{author.name}</span>
                 </a>
               </div>
             ))
           }
         </div>
-        <Share text={article.data.title} />
+        <Share text={article.title} />
       </div>
     </div>
   </div>

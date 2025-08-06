@@ -2,9 +2,11 @@
 import MainHeadline from "@/components/cards/mainHeadline.astro";
 import SubHeadlineCard from "@/components/cards/subHeadlineCard.astro";
 import { articlesHandler } from "@/lib/handlers/articles";
+import {getAllPosts} from "@/lib/fetchPosts";
 
-const mainHeadlineArticle = articlesHandler.mainHeadline();
-const subHeadlinesArticles = articlesHandler.subHeadlines();
+const posts =await getAllPosts();
+const mainHeadlineArticle = posts[0];
+ const subHeadlinesArticles = posts.slice(1, 5);
 ---
 
 <section
