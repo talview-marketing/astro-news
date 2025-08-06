@@ -1,9 +1,9 @@
-// src/lib/sanityClient.ts
+
 import { createClient } from '@sanity/client'
 
 export const sanity = createClient({
-  projectId: '0fl11mre',    // e.g. "abc123"
+  projectId: '0fl11mre',    
   dataset: 'production',
-  useCdn: true,
+  useCdn: false,
   apiVersion: '2023-01-01',
-})
+})     

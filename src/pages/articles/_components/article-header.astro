@@ -8,17 +8,14 @@ import Divider from "@/components/bases/divider.astro";
 import Share from "@/components/elements/share.astro";
 
 type Props = {
-  article: any; // Sanity article structure
+  article: any; 
   readingTime: string;
 };
 
 const { article, readingTime } = Astro.props;
-
-// Handle the case where author might not exist
 const authors = article.authorData ? [article.authorData] : [];
 const categories = article.categories ?? [];
 
-// Handle null/undefined publishedAt with a fallback
 const publishedAt = article.publishedAt || new Date().toISOString();
 ---
 
