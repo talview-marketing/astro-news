@@ -14,6 +14,10 @@ export const getStaticPaths = async () => {
 };
 
 const { article } = Astro.props;
+// Add this check
+if (!article) {
+  return Astro.redirect("/404");
+}
 
 // Convert Portable Text to HTML
 const convertPortableTextToHtml = (blocks: any[]) => {
