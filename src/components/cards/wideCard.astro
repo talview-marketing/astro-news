@@ -10,6 +10,7 @@ type Props = {
 
 const { article, isLast } = Astro.props;
 
+
 const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
 ---
 
@@ -43,7 +44,7 @@ const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
     </div>
     <div class="flex-1 space-y-2">
       <h3 class="text-xl font-semibold lg:group-hover:underline">
-        <a href={`/articles/${article.slug?.current ?? "missing-slug"}`}>
+        <a href={`/articles/${article.slug.current}`}>
           <span class="absolute inset-0 z-10"></span>
           {article.title}
         </a>

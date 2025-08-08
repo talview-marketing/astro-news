@@ -1,34 +1,8 @@
 ---
-import { getAllCategories, getCategoryBySlug } from "@/lib/fetchCategories";
-import NewsCard from "@/components/cards/newsCard.astro";
-import ListLayout from "@/layouts/list.astro";
-
-export async function getStaticPaths() {
-  const categories = await getAllCategories();
-  return categories.map((category) => ({
-    params: { category: category.slug.current }
-  }));
-}
+export const prerender = false;
 
 const { category } = Astro.params;
-const categoryData = await getCategoryBySlug(category);
+if (!category) return Astro.redirect('/404');
 
-if (!categoryData) {
-  return Astro.redirect("/404");
-}
-
-const entry = {
-  title: categoryData.title,
-  description: categoryData.description ?? "",
-};
+return Astro.redirect(`/categories/${category}/1`);
 ---
-
-<ListLayout header={categoryData.title} entry={entry}>
-  <ul class="w-full space-y-8 my-6">
-    {(categoryData.articles ?? []).map((article, index) => (
-      <li>
-        <NewsCard article={article} index={index} />
-      </li>
-    ))}
-  </ul>
-</ListLayout>

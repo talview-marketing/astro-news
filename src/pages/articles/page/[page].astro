@@ -1,0 +1,42 @@
+---
+export const prerender = false;
+
+import ListLayout from "@/layouts/list.astro";
+import Pagination from "@/components/shared/pagination.astro";
+import WideCard from "@/components/cards/wideCard.astro";
+import { SITE } from "@/lib/config";
+import { getAllPosts } from "@/lib/fetchPosts";
+
+const currentPage = Math.max(1, Number(Astro.params.page || 1));
+const all = await getAllPosts(); // useCdn:false
+const pageSize = SITE.postsPerPage || 10;
+const lastPage = Math.max(1, Math.ceil(all.length / pageSize));
+const safePage = Math.min(currentPage, lastPage);
+
+const start = (safePage - 1) * pageSize;
+const end = start + pageSize;
+const articles = all.slice(start, end);
+
+const baseUrl = "/articles/page";
+const prevUrl = safePage > 1 ? `${baseUrl}/${safePage - 1}` : undefined;
+const nextUrl = safePage < lastPage ? `${baseUrl}/${safePage + 1}` : undefined;
+
+if (!articles.length) return Astro.redirect(`${baseUrl}/1`);
+---
+
+<ListLayout header="All Articles">
+  <section class="flex-1">
+    <ul class="flex flex-col gap-4">
+      {articles.map((a, i) => <WideCard article={a} isLast={i === articles.length - 1} />)}
+    </ul>
+  </section>
+  <Pagination
+    length={lastPage}
+    currentUrl={`${baseUrl}/${safePage}`}
+    currentPage={safePage}
+    baseUrl={baseUrl}
+    prevUrl={prevUrl}
+    nextUrl={nextUrl}
+    lastUrl={`${baseUrl}/${lastPage}`}
+  />
+</ListLayout>

@@ -1,12 +1,14 @@
 ---
+export const prerender = false;
+
 import AuthorCard from "@/components/cards/authorCard.astro";
 import ListLayout from "@/layouts/list.astro";
-import {getAllAuthors} from "@/lib/fetchAuthors";
+import { getAllAuthors } from "@/lib/fetchAuthors";
+
 const authors = await getAllAuthors();
 ---
 
-<ListLayout  header="Our Authors">
- 
+<ListLayout header="Our Authors">
   <section class="flex-1">
     <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4">
       {authors.map((author) => <AuthorCard author={author} />)}

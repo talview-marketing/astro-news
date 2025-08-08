@@ -1,50 +1,34 @@
 ---
-import { getAllCategories, getCategoryBySlug } from "@/lib/fetchCategories";
+export const prerender = false;
+
+import { getCategoryBySlug } from "@/lib/fetchCategories";
 import ListLayout from "@/layouts/list.astro";
 import Pagination from "@/components/shared/pagination.astro";
 import WideCard from "@/components/cards/wideCard.astro";
 import { SITE } from "@/lib/config";
 
-export async function getStaticPaths() {
-  const categories = await getAllCategories();
-  const pageSize = SITE.postsPerPage;
-  const paths = [];
+const { category, page } = Astro.params;
+if (!category) return Astro.redirect("/404");
 
-  for (const category of categories) {
-    const numArticles = category.articles?.length ?? 0;
-    const numPages = Math.max(1, Math.ceil(numArticles / pageSize));
-    
-    for (let page = 1; page <= numPages; page++) {
-      paths.push({
-        params: {
-          category: category.slug.current,
-          page: page.toString(),
-        },
-        props: {
-          categorySlug: category.slug.current,
-          pageNumber: page,
-          totalArticles: numArticles,
-        },
-      });
-    }
-  }
+// Your existing query accepts slug.current; we pass the route param as-is.
+const categoryData = await getCategoryBySlug(category);
+if (!categoryData) return Astro.redirect("/404");
 
-  return paths;
-}
+// Pagination
+const currentPage = Math.max(1, Number(page || 1));
+const pageSize = SITE.postsPerPage || 10;
 
-const { categorySlug, pageNumber, totalArticles } = Astro.props;
-const categoryData = await getCategoryBySlug(categorySlug);
+const all = categoryData.articles ?? [];
+const lastPage = Math.max(1, Math.ceil(all.length / pageSize));
+const safePage = Math.min(currentPage, lastPage);
 
-if (!categoryData) {
-  return Astro.redirect("/404");
-}
+const start = (safePage - 1) * pageSize;
+const end = start + pageSize;
+const articles = all.slice(start, end);
 
-// Pagination logic
-const pageSize = SITE.postsPerPage;
-const startIndex = (pageNumber - 1) * pageSize;
-const endIndex = startIndex + pageSize;
-const articles = categoryData.articles?.slice(startIndex, endIndex) ?? [];
-const totalPages = Math.ceil(totalArticles / pageSize);
+const baseUrl = `/categories/${category}`;
+const prevUrl = safePage > 1 ? `${baseUrl}/${safePage - 1}` : undefined;
+const nextUrl = safePage < lastPage ? `${baseUrl}/${safePage + 1}` : undefined;
 
 const entry = {
   title: categoryData.title,
@@ -55,18 +39,19 @@ const entry = {
 <ListLayout header={categoryData.title} entry={entry}>
   <ul class="flex flex-col gap-2 flex-1">
     {articles.map((article, index) => (
-      <WideCard
-        article={article}
-        isLast={index === articles.length - 1}
-      />
+      <WideCard article={article} isLast={index === articles.length - 1} />
     ))}
   </ul>
-  {totalPages > 1 && (
+
+  {lastPage > 1 && (
     <Pagination
-      length={totalPages}
-      currentPage={pageNumber}
-      baseUrl={`/categories/${categorySlug}`}
-      // Add other pagination props as needed
+      length={lastPage}
+      currentUrl={`${baseUrl}/${safePage}`}
+      currentPage={safePage}
+      baseUrl={baseUrl}
+      prevUrl={prevUrl}
+      nextUrl={nextUrl}
+      lastUrl={`${baseUrl}/${lastPage}`}
     />
   )}
 </ListLayout>

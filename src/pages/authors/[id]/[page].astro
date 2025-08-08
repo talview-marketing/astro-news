@@ -1,51 +1,33 @@
 ---
-import { getAllAuthors, getAuthorBySlug } from "@/lib/fetchAuthors";
+export const prerender = false;
+
+import { getAuthorBySlug } from "@/lib/fetchAuthors";
 import ListLayout from "@/layouts/list.astro";
 import WideCard from "@/components/cards/wideCard.astro";
 import Pagination from "@/components/shared/pagination.astro";
 import { SITE } from "@/lib/config";
 
-export async function getStaticPaths() {
-  const authors = await getAllAuthors();
-  const pageSize = SITE.postsPerPage;
-  const paths = [];
+const { id, page } = Astro.params;
+if (!id) return Astro.redirect("/404");
 
-  for (const author of authors) {
-    const authorData = await getAuthorBySlug(author.slug?.current || author._id);
-    const numArticles = authorData.articles?.length ?? 0;
-    const numPages = Math.max(1, Math.ceil(numArticles / pageSize));
-    
-    for (let page = 1; page <= numPages; page++) {
-      paths.push({
-        params: {
-          id: author.slug?.current || author._id,
-          page: page.toString(),
-        },
-        props: {
-          authorSlug: author.slug?.current || author._id,
-          pageNumber: page,
-          totalArticles: numArticles,
-        },
-      });
-    }
-  }
+const authorData = await getAuthorBySlug(id); // accepts slug.current or _id (your query)
+if (!authorData) return Astro.redirect("/404");
 
-  return paths;
-}
+// Pagination
+const currentPage = Math.max(1, Number(page || 1));
+const pageSize = SITE.postsPerPage || 10;
+const all = authorData.articles ?? [];
+const lastPage = Math.max(1, Math.ceil(all.length / pageSize));
+const safePage = Math.min(currentPage, lastPage);
 
-const { authorSlug, pageNumber, totalArticles } = Astro.props;
-const authorData = await getAuthorBySlug(authorSlug);
+const start = (safePage - 1) * pageSize;
+const end = start + pageSize;
+const articles = all.slice(start, end);
 
-if (!authorData) {
-  return Astro.redirect("/404");
-}
-
-// Pagination logic
-const pageSize = SITE.postsPerPage;
-const startIndex = (pageNumber - 1) * pageSize;
-const endIndex = startIndex + pageSize;
-const articles = authorData.articles?.slice(startIndex, endIndex) ?? [];
-const totalPages = Math.ceil(totalArticles / pageSize);
+// Build URLs using the original :id from the route (works with slug or _id)
+const baseUrl = `/authors/${id}`;
+const prevUrl = safePage > 1 ? `${baseUrl}/${safePage - 1}` : undefined;
+const nextUrl = safePage < lastPage ? `${baseUrl}/${safePage + 1}` : undefined;
 
 const entry = {
   title: `${authorData.name}'s Articles`,
@@ -57,20 +39,20 @@ const entry = {
   <section class="flex-1">
     <ul class="flex flex-col gap-4">
       {articles.map((article, index) => (
-        <WideCard
-          article={article}
-          isLast={index === articles.length - 1}
-        />
+        <WideCard article={article} isLast={index === articles.length - 1} />
       ))}
     </ul>
   </section>
 
-  {totalPages > 1 && (
+  {lastPage > 1 && (
     <Pagination
-      length={totalPages}
-      currentPage={pageNumber}
-      baseUrl={`/authors/${authorSlug}`}
-      // Add other pagination props as needed
+      length={lastPage}
+      currentUrl={`${baseUrl}/${safePage}`}
+      currentPage={safePage}
+      baseUrl={baseUrl}
+      prevUrl={prevUrl}
+      nextUrl={nextUrl}
+      lastUrl={`${baseUrl}/${lastPage}`}
     />
   )}
 </ListLayout>

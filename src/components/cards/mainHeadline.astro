@@ -34,7 +34,7 @@ const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
   <div class="flex flex-col gap-2">
     <div>
       <h2 class="text-xl font-semibold lg:group-hover:underline underline-offset-2">
-        <a href={`/articles/${slug}`}>
+        <a href={`/articles/${article.slug.current}`}>
           <span class="absolute inset-0 z-10"></span>
           {title}
         </a>

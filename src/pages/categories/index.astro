@@ -1,12 +1,12 @@
 ---
+export const prerender = false;
+
 import ListLayout from "@/layouts/list.astro";
 import NewsCard from "@/components/cards/newsCard.astro";
 import ArrowRight02 from "@/assets/svgs/arrow-right-02.astro";
 import { getAllCategories } from "@/lib/fetchCategories";
 
-
 const categories = await getAllCategories();
-
 
 const entry = {
   title: "All Categories",
@@ -26,7 +26,7 @@ const entry = {
             </span>
           </h2>
           <a
-            href={`/categories/${category.slug.current}/1`}
+            href={`/categories/${category.slug?.current ?? category.slug}/1`}
             class="group flex text-sm items-center gap-1 hover:gap-2 transition-all duration-200"
           >
             See All
@@ -35,6 +35,7 @@ const entry = {
             </span>
           </a>
         </div>
+
         <div class="snap-x">
           <div class="flex overflow-x-auto pb-4 space-x-4 snap-x snap-proximity">
             {(category.articles ?? []).slice(0, 6).map((article, index) => (

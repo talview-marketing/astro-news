@@ -8,7 +8,7 @@ import { SITE } from "./src/lib/config";
 import sanityIntegration from '@sanity/astro';
   import netlify from "@astrojs/netlify";
 import react from '@astrojs/react';
-import pagefind from "astro-pagefind";
+// import pagefind from "astro-pagefind";
 export default defineConfig({
   site: SITE.url,
   base: SITE.basePath,
@@ -16,12 +16,12 @@ export default defineConfig({
     remarkPlugins: [readingTime, modifiedTime],
   },
   image: {},
-//  output: 'server', 
-//   adapter: netlify({}),
+ output: 'server', 
+  adapter: netlify({}),
 integrations: [
     mdx(),
     sitemap(),
-    pagefind(),
+    // pagefind(),
     react(), 
     sanityIntegration({
       projectId: '0fl11mre',   

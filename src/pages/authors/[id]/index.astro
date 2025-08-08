@@ -1,40 +1,11 @@
 ---
-import { getAllAuthors } from "@/lib/fetchAuthors";
-import { getAuthorBySlug } from "@/lib/fetchAuthors"; // You'll need to create this
-import ListLayout from "@/layouts/list.astro";
-import WideCard from "@/components/cards/wideCard.astro";
+export const prerender = false;
 
-// Generate static paths for all authors
-export async function getStaticPaths() {
-  const authors = await getAllAuthors();
-  return authors.map((author) => ({
-    params: { id: author.slug?.current || author._id },
-    props: { authorSlug: author.slug?.current || author._id }
-  }));
-}
-
-const { authorSlug } = Astro.props;
-const authorData = await getAuthorBySlug(authorSlug);
-
-if (!authorData) {
+const { id } = Astro.params;
+if (!id) {
   return Astro.redirect("/404");
 }
 
-const entry = {
-  title: `${authorData.name}'s Articles`,
-  description: `Articles written by ${authorData.name}`,
-};
+// Always send /authors/:id → /authors/:id/1 (first page)
+return Astro.redirect(`/authors/${id}/1`);
 ---
-
-<ListLayout header={`${authorData.name}'s Articles`} entry={entry}>
-  <section class="flex-1">
-    <ul class="flex flex-col gap-4">
-      {(authorData.articles ?? []).map((article, index) => (
-        <WideCard
-          article={article}
-          isLast={index === (authorData.articles?.length ?? 0) - 1}
-        />
-      ))}
-    </ul>
-  </section>
-</ListLayout>
