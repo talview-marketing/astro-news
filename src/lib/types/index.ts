@@ -1,4 +1,4 @@
-import type { CollectionEntry } from "astro:content";
+// import type { CollectionEntry } from "astro:content";
 
 export type Icon = {
   size?: string;
@@ -35,4 +35,4 @@ export type ArticleMeta = Meta & {
   authors: Author[];
 };
 
-export type Entry = CollectionEntry<"articles" | "views">;
+// export type Entry = CollectionEntry<"articles" | "views">;

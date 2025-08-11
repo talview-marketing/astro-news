@@ -9,10 +9,10 @@ import Share from "@/components/elements/share.astro";
 
 type Props = {
   article: any; 
-  readingTime: string;
+ 
 };
 
-const { article, readingTime } = Astro.props;
+const { article } = Astro.props;
 const authors = article.authorData ? [article.authorData] : [];
 const categories = article.categories ?? [];
 
@@ -81,10 +81,7 @@ const publishedAt = article.publishedAt || new Date().toISOString();
           >
         </span>
         <Divider />
-     <!--   <span class="flex items-center gap-1">
-          <Time04 size="15" />
-          <span>{readingTime}</span>
-        </span> -->
+  
       </div>
       
       <div class="w-full flex flex-wrap gap-2 items-center justify-between">

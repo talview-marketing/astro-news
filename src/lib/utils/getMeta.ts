@@ -5,7 +5,6 @@ import { capitalizeFirstLetter } from "@/lib/utils/letter";
 import { normalizeDate } from "@/lib/utils/date";
 import { getAllAuthors } from "@/lib/fetchAuthors";
 
-// Define SanityPost type
 interface SanityAuthor {
   _id: string;
   name: string;
@@ -61,8 +60,6 @@ export const getMeta = async (
 
     return meta;
   }
-
-  // fallback for other page types if needed
   const fallbackMeta: Meta = {
     title: SITE.title,
     metaTitle: SITE.title,
