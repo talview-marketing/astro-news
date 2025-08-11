@@ -14,34 +14,6 @@ export const SITE = {
   postsPerPage: 4,
 };
 
-
-// export const NAVIGATION_LINKS: Link[] = [
-//   {
-//     href: "/categories/technology",
-//     text: "Technology",
-//   },
-//   {
-//     href: "/categories/programming",
-//     text: "Programming",
-//   },
-//   {
-//     href: "/categories/lifestyle",
-//     text: "Lifestyle",
-//   },
-//   {
-//     href: "/categories/productivity",
-//     text: "Productivity",
-//   },
-//   {
-//     href: "/categories/health",
-//     text: "Health",
-//   },
-//   {
-//     href: "/categories/finance",
-//     text: "Finance",
-//   },
-// ];
- 
 export async function getNavigationLinks(): Promise<Link[]> {
   const categories = await getAllCategories();
 

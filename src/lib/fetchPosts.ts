@@ -1,7 +1,7 @@
 import { sanity } from './sanityClient'
 
 export async function getAllPosts() {
-  return await sanity.fetch(`*[_type == "post"] {
+  return await sanity.fetch(`*[_type == "post"]| order(publishedAt desc) {
     title,
     slug,
     description, 
