@@ -3,6 +3,7 @@ import {getAllCategories} from '../../lib/fetchCategories';
 
 export const SITE = {
   title: "Talent Integrity",
+  description:"Blogs Related to Exam",
   url: "https://astro-news-six.vercel.app",
   locale: "en-US",
   dir: "ltr",

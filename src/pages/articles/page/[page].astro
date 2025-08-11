@@ -21,22 +21,27 @@ const baseUrl = "/articles/page";
 const prevUrl = safePage > 1 ? `${baseUrl}/${safePage - 1}` : undefined;
 const nextUrl = safePage < lastPage ? `${baseUrl}/${safePage + 1}` : undefined;
 
-if (!articles.length) return Astro.redirect(`${baseUrl}/1`);
+if (!articles.length) {
+  // out-of-range page -> redirect to first page
+  return Astro.redirect(`${baseUrl}/1`);
+}
 ---
 
 <ListLayout header="All Articles">
   <section class="flex-1">
     <ul class="flex flex-col gap-4">
-      {articles.map((a, i) => <WideCard article={a} isLast={i === articles.length - 1} />)}
+      {articles.map((a, i) => (
+        <WideCard article={a} isLast={i === articles.length - 1} />
+      ))}
     </ul>
   </section>
-  <Pagination
-    length={lastPage}
-    currentUrl={`${baseUrl}/${safePage}`}
-    currentPage={safePage}
-    baseUrl={baseUrl}
-    prevUrl={prevUrl}
-    nextUrl={nextUrl}
-    lastUrl={`${baseUrl}/${lastPage}`}
-  />
+<Pagination
+  length={lastPage}
+  currentPage={safePage}
+  baseUrl={baseUrl}                 
+  prevUrl={prevUrl}
+  nextUrl={nextUrl}
+  lastUrl={`${baseUrl}/${lastPage}`}
+/>
+
 </ListLayout>

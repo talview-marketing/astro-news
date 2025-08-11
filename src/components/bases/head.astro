@@ -16,8 +16,6 @@ const { meta } = Astro.props;
 
 const isArticleMeta = (props: Props["meta"]): props is ArticleMeta =>
   props.type === "article";
-const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
-const OGImage = new URL(meta.ogImage, Astro.url).href;
 ---
 
 <head>
@@ -25,9 +23,6 @@ const OGImage = new URL(meta.ogImage, Astro.url).href;
   <meta charset={SITE.charset} />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
  <link rel="icon" href="/talview_favicon.png"  />
-  <link rel="sitemap" href="/sitemap-index.xml" />
-  <!-- Canonical URL -->
-  <link rel="canonical" href={canonicalURL} />
   <!-- Page Metadata -->
   <title>{meta.title}</title>
   <meta name="title" content={meta.metaTitle} />
