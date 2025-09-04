@@ -3,14 +3,14 @@ import Divider from "@/components/bases/divider.astro";
 import { getDateDistance, normalizeDate } from "@/lib/utils/date";
 const { article, isFirst, isLast } = Astro.props;
 
-// Extract Sanity fields
+
 const title = article.title;
 const description = article.description || "No description available";
 const slug = article.slug?.current || "#";
 const imageUrl = article.image?.url;
 const altText = article.image?.alt || title;
 
-// Use first category if available
+
 const category = article.categories?.[0]?.title || "Uncategorized";
 const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
 ---

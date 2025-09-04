@@ -10,11 +10,11 @@ import { SITE } from "@/lib/config";
 const { category, page } = Astro.params;
 if (!category) return Astro.redirect("/404");
 
-// Your existing query accepts slug.current; we pass the route param as-is.
+
 const categoryData = await getCategoryBySlug(category);
 if (!categoryData) return Astro.redirect("/404");
 
-// Pagination
+
 const currentPage = Math.max(1, Number(page || 1));
 const pageSize = SITE.postsPerPage || 10;
 

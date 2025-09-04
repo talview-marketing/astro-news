@@ -1,10 +1,10 @@
 import type { Link } from "../types";
-import {getAllCategories} from '../../lib/fetchCategories';
+import { getAllCategories } from '../../lib/fetchCategories';
 
 export const SITE = {
   title: "Talent Integrity",
-  description:"Blogs Related to Exam",
-  url: "https://astro-news-six.vercel.app",
+  description: "Blogs ",
+  url: "https://talentintegrity.org",
   locale: "en-US",
   dir: "ltr",
   charset: "UTF-8",
@@ -15,7 +15,7 @@ export const SITE = {
 export async function getNavigationLinks(): Promise<Link[]> {
   const categories = await getAllCategories();
 
-  return categories.map((category :any) => ({
+  return categories.map((category: any) => ({
     href: `/categories/${category.slug.current}`,
     text: category.title,
   }));
@@ -23,36 +23,13 @@ export async function getNavigationLinks(): Promise<Link[]> {
 
 
 export const OTHER_LINKS: Link[] = [
-  {
-    href: "/about",
-    text: "About us",
-  },
+
   {
     href: "/authors",
     text: "Authors",
   },
   {
-    href: "/contact",
-    text: "Contact",
-  },
-  {
-    href: "/privacy",
-    text: "Privacy",
-  },
-  {
-    href: "/terms",
-    text: "Terms",
-  },
-  {
-    href: "/cookie-policy",
-    text: "Cookie Policy",
-  },
-  {
-    href: "https://astro-news-six.vercel.app/rss.xml",
-    text: "RSS",
-  },
-  {
-    href: "https://astro-news-six.vercel.app/sitemap-index.xml",
+    href: "/sitemapindex.xml",
     text: "Sitemap",
   },
 ];

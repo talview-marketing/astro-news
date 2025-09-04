@@ -3,7 +3,6 @@ import Divider from "@/components/bases/divider.astro";
 import { getDateDistance, normalizeDate } from "@/lib/utils/date";
 const { article } = Astro.props;
 
-// Sanity data format adjustments:
 const coverImage = article.image?.url;
 const coverAlt = article.image?.alt || article.title;
 const title = article.title;

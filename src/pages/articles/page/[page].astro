@@ -22,7 +22,6 @@ const prevUrl = safePage > 1 ? `${baseUrl}/${safePage - 1}` : undefined;
 const nextUrl = safePage < lastPage ? `${baseUrl}/${safePage + 1}` : undefined;
 
 if (!articles.length) {
-  // out-of-range page -> redirect to first page
   return Astro.redirect(`${baseUrl}/1`);
 }
 ---

@@ -1,8 +1,5 @@
 ---
 const { author } = Astro.props;
-
-// Your query returns `slug` as an object.
-// We’ll prefer slug.current, fall back to _id (your getAuthorBySlug handles both).
 const authorId = author?.slug?.current ?? author?._id ?? null;
 const imageUrl = author?.image?.url;
 ---
