@@ -25,7 +25,7 @@ export default defineConfig({
       dataset: 'production',
       useCdn: false,
       apiVersion: '2023-01-01',
-      studioBasePath: '/studio',
+      // studioBasePath: '/studio',
     }),
   ],
   vite: {
