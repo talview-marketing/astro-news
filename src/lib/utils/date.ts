@@ -34,12 +34,11 @@ export const formatDate = (
   date: string | Date,
   formatType: "long" | "short" = "long"
 ) => {
-  // Ensure that the date is a valid Date string
+
   const dateString = date instanceof Date ? date.toISOString() : date;
 
-  // Get parsed date from cache or parse it
+
   const parsedDate = getParsedDate(dateString);
 
-  // Format the date based on the requested format
   return format(parsedDate, formatType === "short" ? FORMAT_SHORT : FORMAT_LONG);
 };

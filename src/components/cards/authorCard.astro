@@ -2,19 +2,23 @@
 const { author } = Astro.props;
 const authorId = author?.slug?.current ?? author?._id ?? null;
 const imageUrl = author?.image?.url;
+const imageAlt = author?.image?.alt || author?.name || 'Author image';
 ---
 
 <li class="group relative isolate mx-auto w-full">
-  {imageUrl && (
+  {imageUrl ? (
     <img
       src={imageUrl}
-      alt={author.name}
+       alt={imageAlt}
       loading="lazy"
       width="320"
       height="320"
       class="w-320 aspect-square max-w-full object-cover filter grayscale group-hover:grayscale-0 rounded-md"
     />
-  )}
+  ):( <div  class="w-320 aspect-square max-w-full rounded-md filter grayscale group-hover:grayscale-0 bg-gray-100 flex items-center justify-center text-xs text-gray-500">
+          {imageAlt}
+        </div>)
+      }
 
   <div class="flex flex-col gap-0.5 mt-2">
     <h3 class="text-base font-semibold group-hover:underline">

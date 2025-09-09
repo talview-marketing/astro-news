@@ -7,19 +7,26 @@ export async function getAllPosts() {
     description, 
     publishedAt,
     author,
-    body, 
-    image {
-      "url": asset->url,
-      alt
-    },
+    body[]{
+        ...,
+        _type == "image" => {
+          ...,
+          "url": asset->url,
+          "alt": coalesce(alt, "Image")
+        }
+      },
+    image{
+        "url": asset->url,
+        "alt": coalesce(alt,"Post image")
+      },
     "authorData": author-> {
       _id,
       name,
       slug,
-      "image": image {
-        "url": asset->url,
-        alt
-      }
+       "image": {
+          "url": image.asset->url,
+          "alt": coalesce(image.alt, title, "Post image")
+        },
     },
     "categories": categories[]-> {
       _id,
@@ -37,10 +44,17 @@ export async function getPostBySlug(slug: string) {
       description,
       publishedAt,
       author,
-      body,
-      image {
+      body[]{
+        ...,
+        _type == "image" => {
+          ...,
+          "url": asset->url,
+          "alt": coalesce(alt, "Image")
+        }
+      },
+    image{
         "url": asset->url,
-        alt
+        "alt": coalesce(alt,"Post image")
       },
       "authorData": author-> {
         _id,
@@ -48,7 +62,7 @@ export async function getPostBySlug(slug: string) {
         slug,
         "image": image {
           "url": asset->url,
-          alt
+          "alt" : coalesce(alt,"Author image")
         }
       },
       "categories": categories[]-> {

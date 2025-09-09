@@ -56,9 +56,9 @@ const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
         class="object-cover rounded w-full h-full"
       />
     ) : (
-      <div class="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
-        No image
-      </div>
+      <div class=" w-full h-full rounded flex bg-gray-100 items-center justify-center text-xs text-gray-500">
+         {altText}
+        </div>
     )}
     
   </div>

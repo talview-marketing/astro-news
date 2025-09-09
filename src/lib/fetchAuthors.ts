@@ -7,9 +7,9 @@ export async function getAllAuthors() {
     name,
     slug,
     bio, 
-    "image": image {
-      "url": asset->url,
-      alt
+    "image": {
+      "url": image.asset->url,
+      "alt": coalesce(image.alt, name, "Author image")
     }
   }`)
 }
@@ -20,20 +20,27 @@ export async function getAuthorBySlug(slug: string) {
       _id,
       name,
       slug,
-      "image": image {
-        "url": asset->url,
-        alt
-      },
+      "image": {
+      "url": image.asset->url,
+      "alt": coalesce(image.alt, name, "Author image")
+    },
       bio,
       "articles": *[_type == "post" && author._ref == ^._id] | order(publishedAt desc) {
         title,
         slug,
         publishedAt,
-       "image": image {
-        "url": asset->url,
-        alt
+       "image": {
+          "url": image.asset->url,
+          "alt": coalesce(image.alt, title, "Post image")
+        },
+        body[]{
+        ...,
+        _type == "image" => {
+          ...,
+          "url": asset->url,
+          "alt": coalesce(alt, "Image")
+        }
       },
-        body,
         description
       }
     }

@@ -32,13 +32,13 @@ const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
       {article.image ? (
         <img
           src={article.image?.url}
-          alt={article.title}
+          alt={article?.image?.alt || article?.title || 'Post image'}
           loading="eager"
           class="aspect-video rounded w-full h-full object-cover"
         />
       ) : (
-        <div class="aspect-video rounded w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-          No image
+        <div class="aspect-video rounded  w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
+         {article?.image?.alt || article?.title || 'Post image'}
         </div>
       )}
     </div>
@@ -65,7 +65,6 @@ const publishedTime = article?.publishedAt ?? "2023-01-01T00:00:00Z";
       <Divider />
       <small class="flex items-center gap-1">
         <span class="capitalize text-sm">
-          {/* You can add category info here if needed */}
         </span>
       </small>
     </div>

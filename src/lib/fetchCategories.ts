@@ -12,14 +12,14 @@ export async function getAllCategories() {
         description,  
         body,image {
       "url": asset->url,
-      alt
+       "alt" : coalesce(alt, "post image")
     },
       }
     }
   `)
 }
 
-export async function getCategoryBySlug(slug:any) {
+export async function getCategoryBySlug(slug: any) {
   return await sanity.fetch(
     `*[_type == "category" && slug.current == $slug][0]{
       title,
@@ -31,7 +31,7 @@ export async function getCategoryBySlug(slug:any) {
         publishedAt,
         image {
       "url": asset->url,
-      alt
+       "alt" : coalesce(alt,"post image")
     },
         body
       }
