@@ -28,6 +28,10 @@ export const OTHER_LINKS: Link[] = [
     href: "/authors",
     text: "Authors",
   },
+  {
+    href: "/privacy",
+    text: "Privacy",
+  },
 
 ];
 
