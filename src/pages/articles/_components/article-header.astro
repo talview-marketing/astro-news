@@ -2,29 +2,20 @@
 import { Image, Picture } from "astro:assets";
 import { formatDate, normalizeDate } from "@/lib/utils/date";
 import ResourcesAdd from "@/assets/svgs/resources-add.astro";
-import Time04 from "@/assets/svgs/time-04.astro";
 import Calendar04 from "@/assets/svgs/calendar-04.astro";
 import Divider from "@/components/bases/divider.astro";
-import Share from "@/components/elements/share.astro";
-
-type Props = {
-  article: any; 
- 
-};
 
 const { article } = Astro.props;
 const authors = article.authorData ? [article.authorData] : [];
 const categories = article.categories ?? [];
-
 const publishedAt = article.publishedAt || new Date().toISOString();
 ---
 
 <section
-  class="mb-8 flex flex-col lg:flex-col-reverse border-b border-b-base-300 lg:border-none pb-4 pt-0 lg:pt-6"
+  class="mb-4 flex flex-col lg:flex-col-reverse border-b border-b-base-300 lg:border-none pb-2 pt-0 lg:pt-4"
 >
-  <div
-    class="container px-0 max-w-5xl lg:mt-4 overflow-hidden aspect-[20/9] rounded-md"
-  >
+  <!-- HERO IMAGE -->
+  <div class="container px-0 max-w-5xl lg:mt-4 overflow-hidden aspect-[20/9] rounded-md">
     {article.image?.url ? (
       <img
         src={article.image.url}
@@ -38,86 +29,71 @@ const publishedAt = article.publishedAt || new Date().toISOString();
       </div>
     )}
   </div>
-  
-  <div class="container max-w-5xl">
-    <h1 class="text-3xl lg:text-4xl font-bold text-left text-pretty">
+
+  <!-- TITLE -->
+  <div class="container max-w-5xl pt-6 lg:pt-8">
+    <h1 class="text-4xl lg:text-5xl font-bold text-center text-pretty">
       {article.title}
     </h1>
-    <div class="flex flex-col gap-4 items-start mt-2 lg:mt-6 text-sm">
-      <div class="text-base-content/70 flex items-center gap-2">
-        <!-- Categories -->
-        {categories.length > 0 && (
-          <>
-            <span class="flex items-center gap-1">
-              <ResourcesAdd size="15" />
-              {categories.map((cat, index) => (
-                <a 
-                  href={`/categories/${cat.slug}`} 
-                  class="a-01 font-semibold hover:underline"
-                >
-                  {cat.title}{index < categories.length - 1 ? ', ' : ''}
-                </a>
-              ))}
-            </span>
-            <Divider />
-          </>
-        )}
-        
-        <span class="flex items-center gap-1">
-          <Calendar04 size="15" />
-          <time
-            class="hidden lg:block"
-            datetime={normalizeDate(publishedAt)}
-            >{
-              formatDate(normalizeDate(publishedAt), "long")
-            }</time
-          >
-          <time
-            class="block lg:hidden"
-            datetime={normalizeDate(publishedAt)}
-            >{
-              formatDate(normalizeDate(publishedAt), "short")
-            }</time
-          >
-        </span>
-        <Divider />
-  
-      </div>
-      
-      <div class="w-full flex flex-wrap gap-2 items-center justify-between">
-        <div class="flex flex-wrap gap-4">
-          {
-            authors.map((author) => (
-              <div class="flex items-center gap-2">
-                <a
-                  href={`/authors/${author.slug?.current || author._id}`}
-                  class="flex items-center gap-2"
-                >
-                  <div class="avatar">
-                    <div class="w-8 rounded-full">
-                      {author.image?.url ? (
-                        <img
-                          src={author.image.url}
-                          alt={author.name}
-                          width={48}
-                          height={48}
-                          loading="eager"
-                          class="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs">
-                          {author.name?.charAt(0) || 'A'}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <span class="font-bold capitalize">{author.name}</span>
-                </a>
-              </div>
-            ))
-          }
+
+    <!-- CATEGORIES (optional row above meta) -->
+    {categories.length > 0 && (
+      <div class="mt-3 flex items-center justify-center gap-2 text-sm text-base-content/70">
+        <ResourcesAdd size="15" />
+        <div class="flex flex-wrap items-center gap-1">
+          {categories.map((cat, index) => (
+            <a href={`/categories/${cat.slug}`} class="a-01 font-semibold hover:underline">
+              {cat.title}{index < categories.length - 1 ? ', ' : ''}
+            </a>
+          ))}
         </div>
-       <!-- <Share text={article.title} /> -->
+      </div>
+    )}
+
+    <!-- META ROW: PUBLISHED TIME + AUTHORS -->
+    <div class="mt-3 lg:mt-5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm text-base-content/70">
+      <!-- Published time -->
+      <span class="inline-flex items-center gap-1">
+        <Calendar04 size="15" />
+        <time class="hidden lg:inline" datetime={normalizeDate(publishedAt)}>
+          {formatDate(normalizeDate(publishedAt), "long")}
+        </time>
+        <time class="inline lg:hidden" datetime={normalizeDate(publishedAt)}>
+          {formatDate(normalizeDate(publishedAt), "short")}
+        </time>
+      </span>
+      
+      <!-- Divider - only show on larger screens when items are in a row -->
+      <Divider class="hidden sm:block" />
+       
+      <!-- Authors -->
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        {authors.map((author) => (
+          <a
+            href={`/authors/${author.slug?.current || author._id}`}
+            class="flex items-center gap-2"
+          >
+            <div class="avatar">
+              <div class="w-8 rounded-full">
+                {author.image?.url ? (
+                  <img
+                    src={author.image.url}
+                    alt={author.name}
+                    width={32}
+                    height={32}
+                    loading="eager"
+                    class="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs">
+                    {author.name?.charAt(0) || 'A'}
+                  </div>
+                )}
+              </div>
+            </div>
+            <span class="font-bold capitalize">{author.name}</span>
+          </a>
+        ))}
       </div>
     </div>
   </div>

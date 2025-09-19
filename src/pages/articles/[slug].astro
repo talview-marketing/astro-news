@@ -5,59 +5,19 @@ import BaseLayout from "@/layouts/base.astro";
 import ContentLayout from "@/layouts/content.astro";
 import ArticleHeader from "./_components/article-header.astro";
 import { getPostBySlug } from "@/lib/fetchPosts";
-
+import BodyRenderer from "@/components/BodyRenderer";
 const { slug } = Astro.params;
-if (!slug) {
-  return Astro.redirect("/404");
-}
+if (!slug) return Astro.redirect("/404");
 
 const article = await getPostBySlug(slug);
-if (!article) {
-  return Astro.redirect("/404");
-}
+if (!article) return Astro.redirect("/404");
 
-// Convert Portable Text to HTML
-const convertPortableTextToHtml = (blocks) => {
-  if (!blocks || !Array.isArray(blocks)) return '';
-  return blocks.map((block) => {
-    if (block._type === 'block') {
-      const text = block.children?.map((child) => child.text).join('') || '';
-      switch (block.style) {
-        case 'h1': return `<h1>${text}</h1>`;
-        case 'h2': return `<h2>${text}</h2>`;
-        case 'h3': return `<h3>${text}</h3>`;
-        case 'h4': return `<h4>${text}</h4>`;
-        case 'blockquote': return `<blockquote>${text}</blockquote>`;
-        default: return `<p>${text}</p>`;
-      }
-    }
-    return '';
-  }).join('');
-};
-
-const htmlContent = convertPortableTextToHtml(article.body);
-
-// Reading time
-const getReadingTime = (body) => {
-  if (!body) return "2 min read";
-  const textContent = body
-    .filter((block) => block._type === 'block')
-    .map((block) => block.children?.map((child) => child.text).join(' ') || '')
-    .join(' ');
-  const wordCount = textContent.split(' ').length;
-  return `${Math.ceil(wordCount / 200)} min read`;
-};
 ---
-
 <BaseLayout entry={article}>
-  <ArticleHeader article={article} readingTime={getReadingTime(article.body)} />
+ <ArticleHeader article={article}  /> 
   <ContentLayout>
-    <div class="prose prose-lg max-w-none">
-      {htmlContent ? (
-        <div set:html={htmlContent} />
-      ) : (
-        <p>No content available for this article.</p>
-      )}
-    </div>
+   <div class="prose prose-lg max-w-none">   
+        <BodyRenderer client:load value={article.body} />
+      </div>
   </ContentLayout>
 </BaseLayout>

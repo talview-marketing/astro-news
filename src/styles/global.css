@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
@@ -8,19 +9,27 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+
 @theme {
-  /* Font Family */
-  --font-sans: "Source Sans Pro", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --font-sans: var(--font-inter), "Source Sans Pro", ui-sans-serif, system-ui,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
   --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, Cambria,
     "Times New Roman", Times, serif;
 
   --breakpoint-2xl: initial;
 }
 
+
 @layer base {
   :root {
     @apply cursor-default;
+  }
+   body {
+    @apply font-sans antialiased h-full;
+    font-family: var(--font-inter);
   }
   html {
     @apply h-full text-[16px];
@@ -34,11 +43,6 @@
 
   body {
     @apply font-sans antialiased h-full;
-  }
-
-  h1,
-  h2 {
-    @apply font-serif;
   }
 
   small,
@@ -73,3 +77,40 @@
     @apply hover:underline decoration-primary;
   }
 }
+
+.prose .with-borders,
+.with-borders {
+  width: 100%;
+  border-collapse: collapse;          /* makes inner lines meet the outer line */
+  border: 1px solid #d1d5db;          /* outer border (edge) */
+}
+
+.prose .with-borders th,
+.prose .with-borders td,
+.with-borders th,
+.with-borders td {
+  border: 1px solid #d1d5db;          /* inner grid */
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+}
+
+.prose .with-borders thead th,
+.with-borders thead th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.prose .no-borders,
+.no-borders {
+  width: 100%;
+  border: 0;
+}
+
+.prose .no-borders td,
+.prose .no-borders th,
+.no-borders td,
+.no-borders th {
+  border: 0;
+  padding: 0.75rem 0;
+} 
+

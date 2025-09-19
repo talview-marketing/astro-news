@@ -28,10 +28,7 @@ export const OTHER_LINKS: Link[] = [
     href: "/authors",
     text: "Authors",
   },
-  {
-    href: "/sitemapindex.xml",
-    text: "Sitemap",
-  },
+
 ];
 
 export const SOCIAL_LINKS: Link[] = [
